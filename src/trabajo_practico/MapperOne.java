@@ -18,8 +18,14 @@ public class MapperOne extends Mapper<LongWritable,   Text,        LongWritable,
 			//el resto de los valores hay que concatenarlo en un string
 			try{
 				String[] result = value.toString().split("\t");
-				int k = Integer.parseInt(result[0]);
-				context.write(new LongWritable(k), new Text(result[1]+ "\t" +result[2]+ "\t" +result[3]));
+				String idEmpleado = result[0];
+				String resto = result[1];
+				int k = Integer.parseInt(idEmpleado);
+				for(int i=2; i<result.length;i++){
+						resto = resto  + "\t" +result[i];
+				}
+				
+				context.write(new LongWritable(k), new Text(resto));
 			}catch(Exception e){
 				//...
 			}
