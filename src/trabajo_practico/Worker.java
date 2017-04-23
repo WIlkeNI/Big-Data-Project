@@ -56,7 +56,7 @@ public class Worker extends Configured implements Tool {
 	private Job setupJobTwo(String[] args) throws IOException{		
 	    Configuration conf = getConf();   
 	
-		Job job = new Job(conf, "joberOne");
+		Job job = new Job(conf, "joberTwo");
 	    
 	    job.setJarByClass(Worker.class);
 	    
@@ -87,12 +87,41 @@ public class Worker extends Configured implements Tool {
 	    FileOutputFormat.setOutputPath(job, new Path(outputDir));
 	    
 	    return job;
-	}/*
+	}
 
-	private Job setupJobTree() throws IOException{		
+	private Job setupJobThree(String[] args) throws IOException{	
+	    Configuration conf = getConf();   
+	
+		Job job = new Job(conf, "joberThree");
+	    
+	    job.setJarByClass(Worker.class);
+	    
+	    //configure Mapper
+	    job.setMapperClass(MapperTwo.class);
+	    job.setMapOutputKeyClass(LongWritable.class);
+	    job.setMapOutputValueClass(Text.class);
+	    
+	    //configure Reducer
+	    job.setReducerClass(ReducerThree.class);
+	    job.setOutputKeyClass(LongWritable.class);
+	    job.setOutputValueClass(Text.class);
+	    
+	    //job.setNumReduceTasks(10);	   
+	    job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+	    
+	    FileSystem fs = FileSystem.get(conf);
+	    String inputDir = "resumen_ventas";
+	    String outputDir = "punto_5";
+	    if(fs.exists(new Path(outputDir))){	       
+	       fs.delete(new Path(outputDir),true);
+	    }	    
+
+	    FileInputFormat.addInputPath(job, new Path(inputDir));
+	    FileOutputFormat.setOutputPath(job, new Path(outputDir));		
 	    
 	    return job;
-	}
+	}/*
 
 	private Job setupJobFour() throws IOException{		
 	    
@@ -138,15 +167,15 @@ public class Worker extends Configured implements Tool {
 	    	System.out.println("Error job");
 	    	return -1;
 	    }
-		/*
 		//se ejecuta el job 3
-	    job = setupJobTree();
+	    job = setupJobThree(args);
 	    //conf.setArray("topFive", topFive ); 	       
 	    success = job.waitForCompletion(true);
 	    if (!success){
 	    	System.out.println("Error job");
 	    	return -1;
 	    }
+		/*
 
 		//se ejecuta el job 4
 	    job = setupJobFour(); 	    
