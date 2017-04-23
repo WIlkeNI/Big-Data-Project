@@ -44,7 +44,7 @@ public class ReducerTwo extends Reducer<LongWritable, Text, LongWritable, Text/*
 		}
 		
 		if(cadena.length() == 0){
-			cadena = "0"  + "\t" + "0"  + "\t" + "0";
+			cadena = "0"  + "\t" + "0"  + "\t" + "1";
 		}
 
 		context.write(key, new Text(cadenaUno + cadena));
