@@ -51,12 +51,43 @@ public class Worker extends Configured implements Tool {
 	    FileOutputFormat.setOutputPath(job, new Path(outputDir));
 	    
 	    return job;
-	}/*
+	}
 
-	private Job setupJobTwo() throws IOException{		
+	private Job setupJobTwo(String[] args) throws IOException{		
+	    Configuration conf = getConf();   
+	
+		Job job = new Job(conf, "joberOne");
+	    
+	    job.setJarByClass(Worker.class);
+	    
+	    //configure Mapper
+	    job.setMapperClass(MapperOne.class);
+	    job.setMapOutputKeyClass(LongWritable.class);
+	    job.setMapOutputValueClass(Text.class);
+	    
+	    //configure Reducer
+	    job.setReducerClass(ReducerTwo.class);
+	    job.setOutputKeyClass(LongWritable.class);
+	    job.setOutputValueClass(Text.class);
+	    
+	    //job.setNumReduceTasks(10);	   
+	    job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+	    
+	    FileSystem fs = FileSystem.get(conf);
+	    String inputDir = args[1];
+	    String inputDirTwo = "resumen_ventas";
+	    String outputDir = "listado_temporal";
+	    if(fs.exists(new Path(outputDir))){	       
+	       fs.delete(new Path(outputDir),true);
+	    }	    
+
+	    FileInputFormat.addInputPath(job, new Path(inputDir));
+	    FileInputFormat.addInputPath(job, new Path(inputDirTwo));
+	    FileOutputFormat.setOutputPath(job, new Path(outputDir));
 	    
 	    return job;
-	}
+	}/*
 
 	private Job setupJobTree() throws IOException{		
 	    
@@ -88,8 +119,6 @@ public class Worker extends Configured implements Tool {
 	    Job job;
 	    boolean success;
 		//ArrayWritable topFive;
-		//ArrayWritable tablaBonusPersonal;
-		//ArrayWritable tablaBonusDepartamento;
 		Configuration conf = getConf(); 
 	    
 		//se ejecuta el job 1
@@ -99,20 +128,20 @@ public class Worker extends Configured implements Tool {
 	    	System.out.println("Error job");
 	    	return -1;
 	    }
-		/*
+		
 		//se ejecuta el job 2
-	    job = setupJobTwo();
+	    job = setupJobTwo(args);
 		//Aca se debe escribir en el contexto el top 5 de departamentos
 		
-		//conf.setArray("topFive", topFive ); 	    
-	    success = job.waitForCompletion(true);
+		success = job.waitForCompletion(true);
 	    if (!success){
 	    	System.out.println("Error job");
 	    	return -1;
 	    }
-		
+		/*
 		//se ejecuta el job 3
-	    job = setupJobTree(); 	    
+	    job = setupJobTree();
+	    //conf.setArray("topFive", topFive ); 	       
 	    success = job.waitForCompletion(true);
 	    if (!success){
 	    	System.out.println("Error job");
