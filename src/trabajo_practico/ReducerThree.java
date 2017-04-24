@@ -11,12 +11,12 @@ public class ReducerThree extends Reducer<LongWritable, Text, LongWritable, Text
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
-		float importe = 0;
+		double importe = 0;
 		int ventas = 0;
 		
 		for (@SuppressWarnings("unused") Object val : values) {
 			String[] i = val.toString().split("\t");
-			importe = importe + Float.parseFloat(i[1]);
+			importe = importe + Double.parseDouble(i[1]);
 			ventas = ventas + Integer.parseInt(i[0]);
 		}
 
