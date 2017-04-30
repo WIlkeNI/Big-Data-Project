@@ -7,23 +7,23 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 
-public class ReducerTwo extends Reducer<LongWritable, Text, LongWritable, Text/*LongWritable*//*Deberia devolver un text con las columnas concatenadas*/> {
+public class ReducerTwo extends Reducer<LongWritable, Text, LongWritable, Text> {
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
 		int cantidadVentas = 0;
 		String cadenaUno = "";
 		String cadena = "";
-		String bonus = "1"; 
-		
+		String bonus = "1";
+
 		for (@SuppressWarnings("unused") Object val : values) {
-		
+
 			String[] campos = val.toString().split("\t");
-			
+
 			if(campos.length == 3){
 				cantidadVentas = Integer.parseInt(campos[1]);
-				if(cantidadVentas > 500){	
-							bonus = "2";	 
+				if(cantidadVentas > 500){
+							bonus = "2";
 				}else if(cantidadVentas <= 500 && cantidadVentas >= 251){
 							bonus = "1.6";
 				}else if(cantidadVentas <= 250 && cantidadVentas >= 51){
@@ -39,10 +39,10 @@ public class ReducerTwo extends Reducer<LongWritable, Text, LongWritable, Text/*
 				cadena = cadena  + "\t" + bonus;
 			}else{
 				cadenaUno =  "\t" +campos[0];
-			} 
-			
+			}
+
 		}
-		
+
 		if(cadena.length() == 0){
 			cadena = "0"  + "\t" + "0"  + "\t" + "1";
 		}

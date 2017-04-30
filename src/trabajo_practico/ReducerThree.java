@@ -7,13 +7,13 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 
-public class ReducerThree extends Reducer<LongWritable, Text, LongWritable, Text/*LongWritable*//*Deberia devolver un text con las columnas concatenadas*/> {
+public class ReducerThree extends Reducer<LongWritable, Text, LongWritable, Text> {
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
 		double importe = 0;
 		int ventas = 0;
-		
+
 		for (@SuppressWarnings("unused") Object val : values) {
 			String[] campos = val.toString().split("\t");
 			importe += Double.parseDouble(campos[1]);

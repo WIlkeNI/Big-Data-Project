@@ -11,11 +11,6 @@ public class ReducerFour extends Reducer<LongWritable, Text, LongWritable, Text/
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
-		Map<Integer, Integer> bonusPersonales = new HashMap<Integer, Integer>();
-    bonusPersonales.put(500, 2);		bonusPersonales.put(251, 1.6);
-    bonusPersonales.put(51, 1.3);		bonusPersonales.put(11, 1.1);
-    bonusPersonales.put(1, 1.02);	  bonusPersonales.put(0, 1);
-
     Map<Integer, Integer> bonusDepartamento = new HashMap<Integer, Integer>();
     bonusDepartamento.put(1, 1.35);   bonusDepartamento.put(2, 1,3);
     bonusDepartamento.put(3, 1.25);   bonusDepartamento.put(4, 1.2);
