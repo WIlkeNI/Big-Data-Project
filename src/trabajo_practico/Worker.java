@@ -154,7 +154,9 @@ public class Worker extends Configured implements Tool {
 	       fs.delete(new Path(outputDir),true);
 	    }
 
-	    FileInputFormat.addInputPath(job, new Path(inputDir));
+			MultipleInputs.addInputPath(job, inputDir1, TextInputFormat.class, MapperFour.class);
+ 		 	MultipleInputs.addInputPath(job,inputDir2, TextInputFormat.class, MapperFour.class);
+	    // FileInputFormat.addInputPath(job, new Path(inputDir));
 	    FileOutputFormat.setOutputPath(job, new Path(outputDir));
 
 	    return job;
