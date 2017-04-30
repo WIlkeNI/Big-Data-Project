@@ -3,6 +3,11 @@ package tp;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+import org.apache.hadoop.mapreduce.InputFormat;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import  org.apache.hadoop.fs.Path;
+import  org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
