@@ -10,11 +10,13 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 
 public class Worker extends Configured implements Tool {
 	String baseDir;
@@ -133,7 +135,6 @@ public class Worker extends Configured implements Tool {
 	    job.setJarByClass(Worker.class);
 
 	    //configure Mapper
-	    job.setMapperClass(MapperFour.class);
 	    job.setMapOutputKeyClass(LongWritable.class);
 	    job.setMapOutputValueClass(Text.class);
 
@@ -154,8 +155,8 @@ public class Worker extends Configured implements Tool {
 	       fs.delete(new Path(outputDir),true);
 	    }
 
-			MultipleInputs.addInputPath(job, inputDir1, TextInputFormat.class, MapperFour.class);
- 		 	MultipleInputs.addInputPath(job,inputDir2, TextInputFormat.class, MapperFour.class);
+			MultipleInputs.addInputPath(job, new Path(inputDir2), TextInputFormat.class, MapperFourA.class);
+ 		 	MultipleInputs.addInputPath(job, new Path(inputDir1), TextInputFormat.class, MapperFourB.class);
 	    // FileInputFormat.addInputPath(job, new Path(inputDir));
 	    FileOutputFormat.setOutputPath(job, new Path(outputDir));
 
@@ -210,7 +211,6 @@ public class Worker extends Configured implements Tool {
 	    	System.out.println("Error job");
 	    	return -1;
 	    }
-		/*
 
 		//se ejecuta el job 4
 	    job = setupJobFour();
@@ -218,8 +218,9 @@ public class Worker extends Configured implements Tool {
 	    if (!success){
 	    	System.out.println("Error job");
 	    	return -1;
-	    }
+			}
 
+			/*
 		//se ejecuta el job 5
 	    job = setupJobFive();
 	    success = job.waitForCompletion(true);

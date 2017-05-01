@@ -4,6 +4,11 @@ import java.io.IOException;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import org.apache.hadoop.mapreduce.Reducer;
 
 
@@ -11,32 +16,13 @@ public class ReducerFour extends Reducer<LongWritable, Text, LongWritable, Text/
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
-	// public void reduce(Text key, Iterable<Text> values, Context context)
-	// 		throws IOException , InterruptedException
-	// 		{
-	// 	int i =0;
-	// 	for(Text value:values)
-	// 	{
-	// 		if(i == 0){
-	// 			merge = value.toString()+",";
-	// 		}
-	// 		else{
-	// 			merge += value.toString();
-	// 		}
-	//
-	// 		i++;
-	// 	}
-	// 		}
-	// 	valEmit.set(merge);
-	// 	context.write(key, valEmit);
-
 		Text valEmit = new Text();
 		String merge = "";
 		int i =0;
 
 
-    Map<Integer, Integer> bonusDepartamento = new HashMap<Integer, Integer>();
-    bonusDepartamento.put(1, 1.35);   bonusDepartamento.put(2, 1,3);
+    HashMap<Integer, Double> bonusDepartamento = new HashMap<Integer, Double>();
+    bonusDepartamento.put(1, 1.35);   bonusDepartamento.put(2, 1.3);
     bonusDepartamento.put(3, 1.25);   bonusDepartamento.put(4, 1.2);
     bonusDepartamento.put(4, 1.15);   bonusDepartamento.put(6, 1.1);
 
@@ -46,10 +32,10 @@ public class ReducerFour extends Reducer<LongWritable, Text, LongWritable, Text/
 			// ventas += Integer.parseInt(campos[0]);
 
 			if(i == 0){
-						merge = value.toString()+",";
+						merge = val.toString() + "\t";
 					}
 					else{
-						merge += value.toString();
+						merge += val.toString();
 					}
 
 					i++;
