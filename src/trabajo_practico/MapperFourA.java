@@ -13,20 +13,15 @@ import org.apache.hadoop.mapreduce.Mapper;
 //									   Input key	 Input val	  Output key	   Output val
 public class MapperFourA extends Mapper<LongWritable,   Text,        LongWritable, 	   Text>{ //ver de cambiar la salida de Long a Integer
 
-    // private static LongWritable one = new LongWritable(1);
+    private static LongWritable one = new LongWritable(1);
 
 
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException{
 
-			//El key del resultado del Mapper seria id_Empleado
-			//el resto de los valores hay que concatenarlo en un string
 			try{
-				// String[] result = value.toString().split("\t");
-				// int depto = Integer.parseInt(result[1]);
-				// String cant_ventas = result[2];
-				// String importe_ventas = result[3];
 
-      	context.write(key, new Text(value + "\t" + "A"));
+
+      	context.write(one, new Text(value));
 
 			}catch(Exception e){
 				//...
