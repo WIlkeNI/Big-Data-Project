@@ -1,5 +1,6 @@
 package tp;
 
+import java.util.*;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -124,6 +125,35 @@ public class Worker extends Configured implements Tool {
 	}/*
 
 	private Job setupJobFour() throws IOException{		
+	    Configuration conf = getConf();   
+	
+		Job job = new Job(conf, "joberFour");
+	    
+	    job.setJarByClass(Worker.class);
+	    
+	    //configure Mapper
+	    job.setMapperClass(MapperOne.class);
+	    job.setMapOutputKeyClass(LongWritable.class);
+	    job.setMapOutputValueClass(Text.class);
+	    
+	    //configure Reducer
+	    job.setReducerClass(ReducerFour.class);
+	    job.setOutputKeyClass(LongWritable.class);
+	    job.setOutputValueClass(Text.class);
+	    
+	    //job.setNumReduceTasks(10);	   
+	    job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+	    
+	    FileSystem fs = FileSystem.get(conf);
+	    //String inputDir = "resumen_ventas";
+	    String outputDir = "topFive";
+	    if(fs.exists(new Path(outputDir))){	       
+	       fs.delete(new Path(outputDir),true);
+	    }	    
+
+	    //FileInputFormat.addInputPath(job, new Path(inputDir));
+	    FileOutputFormat.setOutputPath(job, new Path(outputDir));	
 	    
 	    return job;
 	}
@@ -151,7 +181,7 @@ public class Worker extends Configured implements Tool {
 		Configuration conf = getConf(); 
 	    
 		//se ejecuta el job 1
-	    job = setupJobOne(args); 	    
+	    /*job = setupJobOne(args); 	    
 	    success = job.waitForCompletion(true);
 	    if (!success){
 	    	System.out.println("Error job");
@@ -166,17 +196,20 @@ public class Worker extends Configured implements Tool {
 	    if (!success){
 	    	System.out.println("Error job");
 	    	return -1;
-	    }
+	    }*/
 		//se ejecuta el job 3
 	    job = setupJobThree(args);
+	    
+	    conf.setInt("esto", 1);
 	    //conf.setArray("topFive", topFive ); 	       
 	    success = job.waitForCompletion(true);
 	    if (!success){
 	    	System.out.println("Error job");
 	    	return -1;
 	    }
-		/*
-
+	    
+		System.out.println(conf.get("esto"));
+/*
 		//se ejecuta el job 4
 	    job = setupJobFour(); 	    
 	    success = job.waitForCompletion(true);
@@ -184,6 +217,7 @@ public class Worker extends Configured implements Tool {
 	    	System.out.println("Error job");
 	    	return -1;
 	    }
+		
 
 		//se ejecuta el job 5
 	    job = setupJobFive(); 	    
