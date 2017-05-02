@@ -99,7 +99,7 @@ public class Worker extends Configured implements Tool {
 	    job.setJarByClass(Worker.class);
 
 	    //configure Mapper
-	    job.setMapperClass(MapperTwo.class);
+			job.setMapperClass(MapperTwo.class);
 	    job.setMapOutputKeyClass(LongWritable.class);
 	    job.setMapOutputValueClass(Text.class);
 
@@ -135,6 +135,7 @@ public class Worker extends Configured implements Tool {
 	    job.setJarByClass(Worker.class);
 
 	    //configure Mapper
+			job.setMapperClass(MapperFourA.class);
 	    job.setMapOutputKeyClass(LongWritable.class);
 	    job.setMapOutputValueClass(Text.class);
 
@@ -148,16 +149,16 @@ public class Worker extends Configured implements Tool {
       job.setOutputFormatClass(TextOutputFormat.class);
 
 	    FileSystem fs = FileSystem.get(conf);
-	    String inputDir1 = "resumen_ventas";
-			String inputDir2 = "punto_5";
-	    String outputDir = "bonus_dpto_join_id_emp";
+	    String inputDir = "punto_5";
+			// String inputDir2 = "punto_5";
+	    String outputDir = "bonus_dpto";
 	    if(fs.exists(new Path(outputDir))){
 	       fs.delete(new Path(outputDir),true);
 	    }
 
-			MultipleInputs.addInputPath(job, new Path(inputDir2), TextInputFormat.class, MapperFourA.class);
- 		 	MultipleInputs.addInputPath(job, new Path(inputDir1), TextInputFormat.class, MapperFourB.class);
-	    // FileInputFormat.addInputPath(job, new Path(inputDir));
+			// MultipleInputs.addInputPath(job, new Path(inputDir2), TextInputFormat.class, MapperFourA.class);
+			//  	MultipleInputs.addInputPath(job, new Path(inputDir1), TextInputFormat.class, MapperFourB.class);
+	    FileInputFormat.addInputPath(job, new Path(inputDir));
 	    FileOutputFormat.setOutputPath(job, new Path(outputDir));
 
 	    return job;
