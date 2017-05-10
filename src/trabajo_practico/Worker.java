@@ -130,7 +130,7 @@ public class Worker extends Configured implements Tool {
 
 			Configuration conf = getConf();
 
-		Job job = new Job(conf, "joberThree");
+		Job job = new Job(conf, "joberFour");
 
 	    job.setJarByClass(Worker.class);
 
@@ -169,7 +169,7 @@ public class Worker extends Configured implements Tool {
 
 		Configuration conf = getConf();
 
-		Job job = new Job(conf, "joberThree");
+		Job job = new Job(conf, "joberFive");
 
 	    job.setJarByClass(Worker.class);
 
@@ -188,8 +188,8 @@ public class Worker extends Configured implements Tool {
       job.setOutputFormatClass(TextOutputFormat.class);
 
 	    FileSystem fs = FileSystem.get(conf);
-	    String inputDir = "top5_manual.txt";
-	    String outputDir = "subTotales.txt";
+	    String inputDir = "top5_manual";
+	    String outputDir = "subTotales";
 	    if(fs.exists(new Path(outputDir))){
 	       fs.delete(new Path(outputDir),true);
 	    }
@@ -205,7 +205,7 @@ public class Worker extends Configured implements Tool {
 
 			Configuration conf = getConf();
 
-			Job job = new Job(conf, "joberThree");
+			Job job = new Job(conf, "joberSix");
 
 		    job.setJarByClass(Worker.class);
 
@@ -224,8 +224,8 @@ public class Worker extends Configured implements Tool {
 	      job.setOutputFormatClass(TextOutputFormat.class);
 
 		    FileSystem fs = FileSystem.get(conf);
-		    String inputDir = "top5_manual.txt";
-		    String outputDir = "sueldos.txt";
+		    String inputDir = "top5_manual";
+		    String outputDir = "sueldos";
 		    if(fs.exists(new Path(outputDir))){
 		       fs.delete(new Path(outputDir),true);
 		    }
@@ -243,7 +243,7 @@ public class Worker extends Configured implements Tool {
 		//ArrayWritable topFive;
 		Configuration conf = getConf();
 
-		//se ejecuta el job 1
+		// // se ejecuta el job 1
 	  //   job = setupJobOne(args);
 	  //   success = job.waitForCompletion(true);
 	  //   if (!success){
@@ -260,22 +260,22 @@ public class Worker extends Configured implements Tool {
 	  //   	System.out.println("Error job");
 	  //   	return -1;
 	  //   }
-		// //se ejecuta el job 3
-	  //   job = setupJobThree(args);
-	  //   //conf.setArray("topFive", topFive );
-	  //   success = job.waitForCompletion(true);
-	  //   if (!success){
-	  //   	System.out.println("Error job");
-	  //   	return -1;
-	  //   }
-		//
-		// //se ejecuta el job 4
-	  //   job = setupJobFour();
-	  //   success = job.waitForCompletion(true);
-	  //   if (!success){
-	  //   	System.out.println("Error job");
-	  //   	return -1;
-		// 	}
+		//se ejecuta el job 3
+	    job = setupJobThree(args);
+	    //conf.setArray("topFive", topFive );
+	    success = job.waitForCompletion(true);
+	    if (!success){
+	    	System.out.println("Error job");
+	    	return -1;
+	    }
+
+		//se ejecuta el job 4
+	    job = setupJobFour();
+	    success = job.waitForCompletion(true);
+	    if (!success){
+	    	System.out.println("Error job");
+	    	return -1;
+			}
 
 		//se ejecuta el job 5
 	    // job = setupJobFive();
@@ -286,12 +286,12 @@ public class Worker extends Configured implements Tool {
 	    // }
 
 		//se ejecuta el job 6
-	    job = setupJobSix();
-	    success = job.waitForCompletion(true);
-	    if (!success){
-	    	System.out.println("Error job");
-	    	return -1;
-	    }
+	    // job = setupJobSix();
+	    // success = job.waitForCompletion(true);
+	    // if (!success){
+	    // 	System.out.println("Error job");
+	    // 	return -1;
+	    // }
 
 	    return 0;
 	}

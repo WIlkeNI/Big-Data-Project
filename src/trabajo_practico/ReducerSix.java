@@ -15,7 +15,7 @@ public class ReducerSix extends Reducer<LongWritable, Text, LongWritable, Text> 
 		float subBasico = 0;
 		float subBonusEmpleado = 0;
 		float subBonusDepartamento = 0;
-		TreeMap<Long, Integer> tmap = new TreeMap<Long, Integer>();
+		TreeMap<Long, Integer> tmap = new TreeMap<Long, Integer>(Collections.reverseOrder());
 
 		for (@SuppressWarnings("unused") Object val : values) {
 			String[] i = val.toString().split("\t");
