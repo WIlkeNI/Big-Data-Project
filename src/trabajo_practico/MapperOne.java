@@ -20,12 +20,12 @@ public class MapperOne extends Mapper<LongWritable,   Text,        LongWritable,
 				String[] result = value.toString().split("\t");
 				String idEmpleado = result[0];
 				String resto = result[1];
-				int k = Integer.parseInt(idEmpleado);
+				int idEmp = Integer.parseInt(idEmpleado);
 				for(int i=2; i<result.length;i++){
 						resto = resto  + "\t" +result[i];
 				}
-				
-				context.write(new LongWritable(k), new Text(resto));
+
+				context.write(new LongWritable(idEmp), new Text(resto));
 			}catch(Exception e){
 				//...
 			}

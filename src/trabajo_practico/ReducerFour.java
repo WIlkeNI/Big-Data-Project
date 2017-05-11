@@ -59,7 +59,7 @@ public class ReducerFour extends Reducer<LongWritable, Text, LongWritable, Text/
     for (@SuppressWarnings("unused") Object val : values) {
 
 			String[] value = val.toString().split("\t");
-			Departamento d = new Departamento(Integer.parseInt(value[0]), Double.parseDouble(value[2]));
+			Departamento d = new Departamento(Integer.parseInt(value[0]), Double.parseDouble(value[2].replace(",",".")));
 			ventasDep.put(d.getId(), d);
 
 		}
@@ -70,7 +70,7 @@ public class ReducerFour extends Reducer<LongWritable, Text, LongWritable, Text/
 
 			@Override
 			public int compare(Departamento d1, Departamento d2){
-				return (int)(d1.getValor() - d2.getValor());
+				return (int)(d2.getValor() - d1.getValor());
 			}
 		});
 
