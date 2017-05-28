@@ -99,7 +99,7 @@ public class Worker extends Configured implements Tool {
 	    job.setJarByClass(Worker.class);
 
 	    //configure Mapper
-			job.setMapperClass(MapperTwo.class);
+		job.setMapperClass(MapperTwo.class);
 	    job.setMapOutputKeyClass(LongWritable.class);
 	    job.setMapOutputValueClass(Text.class);
 
@@ -110,7 +110,7 @@ public class Worker extends Configured implements Tool {
 
 	    //job.setNumReduceTasks(10);
 	    job.setInputFormatClass(TextInputFormat.class);
-      job.setOutputFormatClass(TextOutputFormat.class);
+	    job.setOutputFormatClass(TextOutputFormat.class);
 
 	    FileSystem fs = FileSystem.get(conf);
 	    String inputDir = "resumen_ventas";
@@ -128,14 +128,14 @@ public class Worker extends Configured implements Tool {
 
 	private Job setupJobFour() throws IOException{
 
-			Configuration conf = getConf();
+		Configuration conf = getConf();
 
 		Job job = new Job(conf, "joberFour");
 
 	    job.setJarByClass(Worker.class);
 
 	    //configure Mapper
-			job.setMapperClass(MapperFourA.class);
+		job.setMapperClass(MapperFourA.class);
 	    job.setMapOutputKeyClass(LongWritable.class);
 	    job.setMapOutputValueClass(Text.class);
 
@@ -146,19 +146,20 @@ public class Worker extends Configured implements Tool {
 
 	    //job.setNumReduceTasks(10);
 	    job.setInputFormatClass(TextInputFormat.class);
-      job.setOutputFormatClass(TextOutputFormat.class);
-
+	    job.setOutputFormatClass(TextOutputFormat.class);
+      
 	    FileSystem fs = FileSystem.get(conf);
 	    String inputDir = "punto_5";
-			// String inputDir2 = "punto_5";
+	    String inputDir2 = "listado_temporal";
 	    String outputDir = "bonus_dpto";
 	    if(fs.exists(new Path(outputDir))){
 	       fs.delete(new Path(outputDir),true);
 	    }
 
-			// MultipleInputs.addInputPath(job, new Path(inputDir2), TextInputFormat.class, MapperFourA.class);
-			//  	MultipleInputs.addInputPath(job, new Path(inputDir1), TextInputFormat.class, MapperFourB.class);
+		// MultipleInputs.addInputPath(job, new Path(inputDir2), TextInputFormat.class, MapperFourA.class);
+		//  	MultipleInputs.addInputPath(job, new Path(inputDir1), TextInputFormat.class, MapperFourB.class);
 	    FileInputFormat.addInputPath(job, new Path(inputDir));
+	    FileInputFormat.addInputPath(job, new Path(inputDir2));
 	    FileOutputFormat.setOutputPath(job, new Path(outputDir));
 
 	    return job;
@@ -185,7 +186,7 @@ public class Worker extends Configured implements Tool {
 
 	    //job.setNumReduceTasks(10);
 	    job.setInputFormatClass(TextInputFormat.class);
-      job.setOutputFormatClass(TextOutputFormat.class);
+	    job.setOutputFormatClass(TextOutputFormat.class);
 
 	    FileSystem fs = FileSystem.get(conf);
 	    String inputDir = "top5_manual";
@@ -243,31 +244,30 @@ public class Worker extends Configured implements Tool {
 		//ArrayWritable topFive;
 		Configuration conf = getConf();
 
-		// // se ejecuta el job 1
-	  //   job = setupJobOne(args);
-	  //   success = job.waitForCompletion(true);
-	  //   if (!success){
-	  //   	System.out.println("Error job");
-	  //   	return -1;
-	  //   }
+		// se ejecuta el job 1
+		/*job = setupJobOne(args);
+		success = job.waitForCompletion(true);
+		if (!success){
+			System.out.println("Error job");
+			return -1;
+	  	}*/
 		//
-		// //se ejecuta el job 2
-	  //   job = setupJobTwo(args);
-		// //Aca se debe escribir en el contexto el top 5 de departamentos
-		//
-		// success = job.waitForCompletion(true);
-	  //   if (!success){
-	  //   	System.out.println("Error job");
-	  //   	return -1;
-	  //   }
+		//se ejecuta el job 2
+		/*job = setupJobTwo(args);
+		//Aca se debe escribir en el contexto el top 5 de departamentos	
+		success = job.waitForCompletion(true);
+		if (!success){
+			System.out.println("Error job");
+			return -1;
+	  	}*/
 		//se ejecuta el job 3
-	    job = setupJobThree(args);
+	    /*job = setupJobThree(args);
 	    //conf.setArray("topFive", topFive );
 	    success = job.waitForCompletion(true);
 	    if (!success){
 	    	System.out.println("Error job");
 	    	return -1;
-	    }
+	    }*/
 
 		//se ejecuta el job 4
 	    job = setupJobFour();
@@ -275,7 +275,7 @@ public class Worker extends Configured implements Tool {
 	    if (!success){
 	    	System.out.println("Error job");
 	    	return -1;
-			}
+		}
 
 		//se ejecuta el job 5
 	    // job = setupJobFive();
