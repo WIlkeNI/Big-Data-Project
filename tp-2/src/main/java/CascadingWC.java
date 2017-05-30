@@ -1,5 +1,5 @@
 import java.util.Properties;
-
+import cascading.pipe.joiner.InnerJoin;
 import cascading.flow.Flow;
 import cascading.flow.FlowConnector;
 import cascading.flow.local.LocalFlowConnector;
@@ -8,7 +8,10 @@ import cascading.operation.Function;
 import cascading.operation.aggregator.Count;
 import cascading.operation.regex.RegexGenerator;
 import cascading.pipe.Each;
+import cascading.pipe.CoGroup;
 import cascading.pipe.Every;
+import cascading.pipe.Merge;
+import cascading.pipe.assembly.Unique;
 import cascading.pipe.GroupBy;
 import cascading.pipe.Pipe;
 import cascading.property.AppProps;
@@ -20,6 +23,7 @@ import cascading.tap.Tap;
 import cascading.tap.local.FileTap;
 import cascading.tuple.Fields;
 import cascading.operation.expression.ExpressionFilter;
+import java.util.*;
 
 
 public class CascadingWC {
@@ -28,8 +32,8 @@ public class CascadingWC {
 		String inputPath = args[0];
 		String outputPath = args[1];
 
-		Class[] tipos = new Class[]{Double.class, Double.class,
-			Double.class, boolean.class, Double.class};
+		Class[] tipos = new Class[]{int.class, int.class,
+			int.class, boolean.class, int.class};
 
 		Scheme sourceScheme = new TextDelimited( new Fields(
 			"idUsuario", "idProducto", "tiempo", "compro",
@@ -44,32 +48,41 @@ public class CascadingWC {
 			"idSiguienteProducto" ), true, "\t", tipos );
 
 		Tap sink = new FileTap(sinkSchem, outputPath, SinkMode.REPLACE);
-
-		Pipe assembly = new Pipe( "buscarUser" );
-
-		ExpressionFilter filtroProducto = new ExpressionFilter( "idProducto != 12615",
-		Double.class );
 		
+		Pipe assemblyPrincipal = new Pipe( "buscarUser" );
+		Pipe assemblyBase = new Pipe("base", assemblyPrincipal);
+		
+		ExpressionFilter filtroProducto = new ExpressionFilter( "idProducto != 12615", Double.class );	
 
-		assembly = new Each( assembly, new Fields( "idProducto" ), filtroProducto );
+		assemblyPrincipal = new Each( assemblyPrincipal, new Fields( "idProducto" ), filtroProducto );
 
 		ExpressionFilter filtroUsuario = new ExpressionFilter( "idUsuario == 14434",
 		Double.class );
 
-		assembly = new Each( assembly, new Fields( "idUsuario" ), filtroUsuario );
+		assemblyPrincipal = new Each( assemblyPrincipal, new Fields( "idUsuario" ), filtroUsuario );
+		
+		Pipe assemblyCompro = new Pipe("compro");
 
- // Filtrar el archivo por el id del producto y que el id del usuario no sea el pasado por parametro.
+		ExpressionFilter filtroCompras = new ExpressionFilter( "compro == false",
+		boolean.class );
 
+		assemblyCompro = new Each(assemblyPrincipal, new Fields("compro"), filtroCompras);
 
-		ExpressionFilter filtroTiempo = new ExpressionFilter( "tiempo < 30",
-		Double.class );
+ 		// Filtrar el archivo por el id del producto y que el id del usuario no sea el pasado por parametro.
+		
+		Pipe assemblyTiempoMayorA30 = new Pipe("tiempoMayorA30");
 
-		assembly = new Each( assembly, new Fields( "tiempo" ), filtroTiempo );
+		ExpressionFilter filtroTiempo = new ExpressionFilter( "tiempo < 30", Double.class );
 
-		/* = new GroupBy( assembly, new Fields("idProducto"));
+		assemblyTiempoMayorA30 = new Each( assemblyPrincipal, new Fields( "tiempo" ), filtroTiempo );
+		
+		Pipe[] pipes = new Pipe[2];
+		pipes[0] = assemblyTiempoMayorA30;
+		pipes[1] = assemblyCompro;		
 
-		Aggregator count = new Count( new Fields( "count" ) );
-		assembly = new Every( assembly, count );*/
+		assemblyPrincipal = new GroupBy(pipes);
+
+		assemblyPrincipal = new Unique(assemblyPrincipal, Fields.ALL);
 
 		Properties properties = AppProps.appProps()
 				  .setName( "word-count-application" )
@@ -77,7 +90,7 @@ public class CascadingWC {
 				  .buildProperties();
 
 		FlowConnector fc = new LocalFlowConnector( properties );
-		Flow flow = fc.connect( "word-count", source, sink, assembly );
+		Flow flow = fc.connect( "word-count", source, sink, assemblyPrincipal );
 
 		flow.complete();
 
