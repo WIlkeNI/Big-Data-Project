@@ -27,8 +27,6 @@ public class MapperTwo extends Mapper<LongWritable,   Text,        LongWritable,
 			}catch(Exception e){
 				//...
 			}
-			Configuration conf = context.getConfiguration(); 
-			conf.setInt("esto", 8);
 	}
 
 

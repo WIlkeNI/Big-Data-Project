@@ -12,11 +12,11 @@ public class ReducerTwo extends Reducer<LongWritable, Text, LongWritable, Text> 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
 		int cantidadVentas = 0;
-		String cadenaUno = "";
+		float sueldoBasico = 0;
 		String cadena = "";
 		String bonus = "1";
 
-		for (@SuppressWarnings("unused") Object val : values) {
+		for (Object val : values) {
 
 			String[] campos = val.toString().split("\t");
 
@@ -33,21 +33,18 @@ public class ReducerTwo extends Reducer<LongWritable, Text, LongWritable, Text> 
 				}else if(cantidadVentas < 10 && cantidadVentas >= 1){
 							bonus = "1.02";
 				}
-				for(int i=0; i<campos.length;i++){
-						cadena = cadena  + "\t" +campos[i];
-				}
-				cadena = cadena  + "\t" + bonus;
+				cadena = val  + "\t" + bonus;
 			}else{
-				cadenaUno =  "\t" +campos[0];
+				sueldoBasico =  Float.parseFloat(campos[0]);
 			}
 
 		}
 
 		if(cadena.length() == 0){
-			cadena = "0"  + "\t" + "0"  + "\t" + "1";
+			cadena = "0" + "\t" + "0"  + "\t" + "0"  + "\t" + "1";
 		}
 
-		context.write(key, new Text(cadenaUno + cadena));
+		context.write(key, new Text(sueldoBasico + "\t" + cadena));
 	}
 
 }

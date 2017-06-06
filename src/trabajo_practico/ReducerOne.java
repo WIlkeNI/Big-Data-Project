@@ -14,7 +14,7 @@ public class ReducerOne extends Reducer<LongWritable, Text, LongWritable, Text/*
 		float importe = 0;
 		int ventas = 0;
 		String depto = "";
-		
+
 		for (@SuppressWarnings("unused") Object val : values) {
 			String[] i = val.toString().split("\t");
 			importe = importe + Float.parseFloat(i[2]);
