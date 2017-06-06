@@ -34,6 +34,7 @@ public class CascadingWC {
 		String inputPath = args[0];
 		String outputPathPunto1 = args[1];
 		String outputPathJoined = args[2];
+		String outputPathProductos = args[3];
 
 		Class[] tipos = new Class[]{int.class, int.class, int.class, boolean.class, int.class};
 
@@ -50,34 +51,34 @@ public class CascadingWC {
 		Scheme sinkSchemJoined = new TextDelimited( new Fields("idUsuario", "tiempo", "compro"), true, "\t", tiposJoined);
 
 		Tap sinkJoined = new FileTap(sinkSchemJoined, outputPathJoined, SinkMode.REPLACE);
+
+		Class[] tiposProductos = new Class[]{int.class, int.class};		
+		
+		Scheme sinkSchemProductos = new TextDelimited( new Fields("idProducto", "compro" ), true, "\t", tiposProductos);
+
+		Tap sinkProductos = new FileTap(sinkSchemProductos, outputPathProductos, SinkMode.REPLACE);
 		
 		Pipe assemblyPrincipal = new Pipe( "buscarUser" );
 		
 		//Pipe que almacena todo el archivo y sirve como auxiliar.
 		Pipe assemblyBase = new Pipe("base");	
 		
-		ExpressionFilter filtroProducto = new ExpressionFilter( "idProducto != 12615", Double.class );	
-		
+		ExpressionFilter filtroProducto = new ExpressionFilter( "idProducto != 12615", Double.class );			
 		//Nos quedamos con los registros que coincidan con el producto recibido
 		assemblyPrincipal = new Each( assemblyPrincipal, new Fields( "idProducto" ), filtroProducto );
 
-		ExpressionFilter filtroUsuario = new ExpressionFilter( "idUsuario == 14434", Double.class );
-		
+		ExpressionFilter filtroUsuario = new ExpressionFilter( "idUsuario == 14434", Double.class );		
 		//Eliminamos de los registros al usuario recibido
 		assemblyPrincipal = new Each( assemblyPrincipal, new Fields( "idUsuario" ), filtroUsuario );
 		
 		//Dentro de este pipe vamos a guardar los registros donde se haya comprado el producto
 		Pipe assemblyCompro = new Pipe("compro");
-
 		ExpressionFilter filtroCompras = new ExpressionFilter( "compro == false", boolean.class );
-
 		assemblyCompro = new Each(assemblyPrincipal, new Fields("compro"), filtroCompras);
 		
 		//Dentro de este pipe vamos a guardar los registros donde el tiempo es mayor a 30 segundos
 		Pipe assemblyTiempoMayorA30 = new Pipe("tiempoMayorA30");
-
 		ExpressionFilter filtroTiempo = new ExpressionFilter( "tiempo < 30", Double.class );
-
 		assemblyTiempoMayorA30 = new Each( assemblyPrincipal, new Fields( "tiempo" ), filtroTiempo );
 		
 		Pipe[] pipes = new Pipe[2];
@@ -115,19 +116,38 @@ public class CascadingWC {
 		//Ordenamos las tuplas
 		joined = new GroupBy(joined, groupFields, sortFields);
 
+		//Se hace el Join entre los usuarios del punto 2 y el assemblyBase (posee todo el archivo)
+		common = new Fields( "idUsuario" );
+		declared = new Fields( "idUsuario", "idProducto", "tiempo", "compro", "idSiguienteProducto", "idUsuario2", "tiempo2", "compro2");
+		Pipe productos = new CoGroup(assemblyBase, common, joined, common, declared, new InnerJoin());
+
+		//Se filtran aquellos productos que se hayan visitando al menos 10 segundos
+		ExpressionFilter filterTime = new ExpressionFilter( "tiempo < 10", int.class );
+		productos = new Each(productos, new Fields("tiempo"), filterTime);
+		
+		//Se filtran aquellos productos que fueron comprados
+		productos = new Each(productos, new Fields("compro"), filtroCompras);
+		
+		//Se agrupan las tuplas por producto
+		productos = new GroupBy(productos, new Fields("idProducto"));
+		//Contamos la cantidad de compras
+		productos = new Every(productos, new Fields("compro"), count);
+		//Filtramos por: Cantidad de compras (Descendente)
+		productos = new GroupBy(productos, groupFields);
+
 		Properties properties = AppProps.appProps()
 				  .setName( "word-count-application" )
 				  .setJarClass( CascadingWC.class )
 				  .buildProperties();
 
 		FlowConnector fc = new LocalFlowConnector( properties );
-		//Flow flow = fc.connect( "word-count", source, sink, assemblyPrincipal );
 
 		FlowDef flowDef = new FlowDef().setName( "Ejemplo" )
 		.addSource( assemblyPrincipal, source )
 		.addSource( assemblyBase, source )		
 		.addTailSink(assemblyPrincipal, sink)
-		.addTailSink(joined, sinkJoined );
+		.addTailSink(joined, sinkJoined )
+		.addTailSink(productos, sinkProductos );
 
 		Flow flow = fc.connect(flowDef);
 
