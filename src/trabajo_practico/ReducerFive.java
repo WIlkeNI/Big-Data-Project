@@ -15,16 +15,20 @@ public class ReducerFive extends Reducer<LongWritable, Text, LongWritable, Text>
 		float subBonusEmpleado = 0;
 		float subBonusDepartamento = 0;
 
-		for (@SuppressWarnings("unused") Object val : values) {
+		for (Object val : values) {
 			String[] i = val.toString().split("\t");
-			subBasico = subBasico + Float.parseFloat(i[1]);
-			subBonusEmpleado += (Float.parseFloat(i[1]) * Float.parseFloat(i[2])) - Float.parseFloat(i[1]);
-			subBonusDepartamento += (Float.parseFloat(i[1]) * Float.parseFloat(i[3])) - Float.parseFloat(i[1]);
+			float sueldo_basico = Float.parseFloat(i[1]);
+			float bonus_personal = Float.parseFloat(i[2]);
+			float bonus_depto = Float.parseFloat(i[3]);
+
+			subBasico = subBasico + sueldo_basico;
+			subBonusEmpleado += (sueldo_basico * bonus_personal) - sueldo_basico;
+			subBonusDepartamento += (sueldo_basico * bonus_depto) - sueldo_basico;
 		}
 
 		float total = subBasico + subBonusEmpleado + subBonusDepartamento;
 
-		context.write(key, new Text(String.valueOf(subBasico) + "\t" + String.valueOf(subBonusEmpleado) + "\t" + String.valueOf(subBonusDepartamento) + "\t" + String.valueOf(total)));
+		context.write(key, new Text(String.format("%f",subBasico) + "\t" + String.format("%f",subBonusEmpleado) + "\t" + String.format("%f",subBonusDepartamento) + "\t" + String.format("%f",total)));
 	}
 
 }

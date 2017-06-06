@@ -12,20 +12,22 @@ public class ReducerSix extends Reducer<LongWritable, Text, LongWritable, Text> 
 
 	public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 
-		float subBasico = 0;
-		float subBonusEmpleado = 0;
-		float subBonusDepartamento = 0;
-		TreeMap<Long, Integer> tmap = new TreeMap<Long, Integer>(Collections.reverseOrder());
+		Double subBasico;
+		Double subBonusEmpleado;
+		Double subBonusDepartamento;
+		TreeMap<Double, Integer> tmap = new TreeMap<Double, Integer>(Collections.reverseOrder());
 
 		for (@SuppressWarnings("unused") Object val : values) {
 			String[] i = val.toString().split("\t");
-			subBasico = Float.parseFloat(i[1]);
-			subBonusEmpleado = (Float.parseFloat(i[1]) * Float.parseFloat(i[2])) - Float.parseFloat(i[1]);
-			subBonusDepartamento = (Float.parseFloat(i[1]) * Float.parseFloat(i[3])) - Float.parseFloat(i[1]);
-			float sueldoTotal = subBasico + subBonusEmpleado + subBonusDepartamento;
+			subBasico = Double.parseDouble(i[1]);
+			subBonusEmpleado = (Double.parseDouble(i[1]) * Double.parseDouble(i[2])) - Double.parseDouble(i[1]);
+			subBonusDepartamento = (Double.parseDouble(i[1]) * Double.parseDouble(i[3])) - Double.parseDouble(i[1]);
+			Double sueldoTotal = subBasico + subBonusEmpleado + subBonusDepartamento;
       context.write(new LongWritable(Integer.parseInt(i[0])), new Text(String.valueOf(sueldoTotal)));
-			tmap.put(new Long((long)sueldoTotal), Integer.parseInt(i[0]));
+			tmap.put(sueldoTotal, Integer.parseInt(i[0]));
 		}
+
+		context.write(new LongWritable(0), new Text("  "));
 
 	  Set set = tmap.entrySet();
   	Iterator iterator = set.iterator();
@@ -34,8 +36,8 @@ public class ReducerSix extends Reducer<LongWritable, Text, LongWritable, Text> 
        Map.Entry mentry = (Map.Entry)iterator.next();
       //  System.out.print("key is: "+ mentry.getKey() + " & Value is: ");
       //  System.out.println(mentry.getValue());
-			 if (topTen < 10){
-					context.write(new LongWritable((long)mentry.getKey()), new Text(String.valueOf(mentry.getValue())));
+			 if (topTen < 11){
+					context.write(new LongWritable(topTen), new Text(String.valueOf(mentry.getValue()) + "\t" + String.valueOf(mentry.getKey())));
 					topTen ++;
 			 }
     }

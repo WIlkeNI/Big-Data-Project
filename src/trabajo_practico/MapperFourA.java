@@ -13,13 +13,12 @@ import org.apache.hadoop.mapreduce.Mapper;
 //									   Input key	 Input val	  Output key	   Output val
 public class MapperFourA extends Mapper<LongWritable,   Text,        LongWritable, 	   Text>{ //ver de cambiar la salida de Long a Integer
 
-    private static LongWritable one = new LongWritable(1);
+  private static LongWritable one = new LongWritable(1);
 
 
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException{
 
 			try{
-
 
       	context.write(one, new Text(value));
 
