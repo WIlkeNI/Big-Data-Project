@@ -6,6 +6,7 @@ import java.util.StringTokenizer;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.conf.Configuration;
 
 //									   Input key	 Input val	  Output key	   Output val
 public class MapperTwo extends Mapper<LongWritable,   Text,        LongWritable, 	   Text>{
