@@ -4,7 +4,7 @@ logVentas = LOAD '/media/sf_bigDataProyectos/input/logVentas.txt' AS (idUsuario:
 ----------------------------------------------------------------------------------------
 /* PUNTO 1 */
 ----------------------------------------------------------------------------------------
-filterExerciseOne = FILTER logVentas BY ((idUsuario != 14434) AND (idProducto == 12615 AND tiempo >= 30)) OR (compro == 'True');
+filterExerciseOne = FILTER logVentas BY ((idUsuario != 14434) AND (idProducto == 12615 AND tiempo >= 30)) OR ((idProducto == 12615)AND (compro == 'True'));
 
 rmf puntoUno;
 STORE filterExerciseOne INTO 'puntoUno';
@@ -21,12 +21,15 @@ ventasDeUsuariosFiltrados = GROUP ventasDeUsuariosFiltrados BY $0;
 --dump ventasDeUsuariosFiltrados;
 
 /*ranking por cantidad de compras*/
--- usuariosFiltradosConVisitas = FOREACH ventasDeUsuariosFiltrados GENERATE group, ventasDeUsuariosFiltrados.$4 AS compras;
+usuariosFiltradosConVisitas = FOREACH ventasDeUsuariosFiltrados GENERATE group, FLATTEN(ventasDeUsuariosFiltrados.$4) AS compras;
+usuariosFiltradosConVisitas = FILTER usuariosFiltradosConVisitas BY compras == 'True';
 
--- topPurchasesRank = ORDER topPurchasesRank BY $1 DESC;
+groupedComprasPorUsuario = GROUP usuariosFiltradosConVisitas BY group;
+topPurchasesRank = FOREACH groupedComprasPorUsuario GENERATE $0, SIZE($1);
+topPurchasesRank = ORDER topPurchasesRank BY $1 DESC;
 
--- rmf rankPorCompras;
--- STORE comprasPorUsuario INTO 'rankPorCompras';
+rmf rankPorCompras;
+STORE topPurchasesRank INTO 'rankPorCompras';
 
 /*ranking por cantidad de tiempo de visita*/
 topSurfingTimeRank = FOREACH ventasDeUsuariosFiltrados GENERATE group, SUM(ventasDeUsuariosFiltrados.tiempo);
