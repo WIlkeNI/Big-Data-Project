@@ -9,7 +9,21 @@
      jar -cvf ./bin/tp/trabajoPractico.jar -C ./bin/ .
      hadoop jar ./bin/tp/trabajoPractico.jar tp.Main ventas empleados
   
-  
+  ---------------------------------------------------------
+  PASOS PARA EJECUTAR SCRIPT DE CASCADING
+  ---------------------------------------------------------
+    
+  Recibe 9 parámetros:
+	1)Archivo de entrada (logVentas.txt)
+	2)Archivo donde se guarda el punto 1
+	2)Archivo donde se guarda el punto 2
+	2)Archivo donde se guarda el punto 3
+	2)Archivo donde se guarda el punto 4
+	2)Archivo donde se guarda el punto 5
+	2)Archivo donde se guarda el punto 6
+	2)Id del usuario
+	2)Id del producto
+
   ---------------------------------------------------------
   PASOS PARA EJECUTAR SCRIPT DE PIG
   ---------------------------------------------------------

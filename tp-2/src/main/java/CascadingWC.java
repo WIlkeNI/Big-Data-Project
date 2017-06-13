@@ -62,7 +62,7 @@ public class CascadingWC {
 		Scheme sinkSchemJoined = new TextDelimited( new Fields("idUsuario", "tiempo", "compro"), true, "\t", tipos2);
 		Tap sinkJoined = new FileTap(sinkSchemJoined, outputPathPunto2, SinkMode.REPLACE);				
 		
-		Scheme sinkSchemProductos = new TextDelimited( new Fields("idProducto", "compro", "tiempo" ), true, "\t", tipos2);
+		Scheme sinkSchemProductos = new TextDelimited( new Fields("idProducto", "tiempo" ), true, "\t", tipos3);
 		Tap sinkProductos = new FileTap(sinkSchemProductos, outputPathPunto3, SinkMode.REPLACE);
 
 		Scheme sinkSchemProductosVendidos = new TextDelimited( new Fields("idProducto", "compro" ), true, "\t", tipos3);
@@ -143,11 +143,16 @@ public class CascadingWC {
 		//Se filtran aquellos productos que se hayan visitando al menos 10 segundos
 		ExpressionFilter filterTime = new ExpressionFilter( "tiempo < 10", int.class );
 		productos = new Each(productos, new Fields("tiempo"), filterTime);
+		productos = new GroupBy(productos, new Fields("idProducto"));
+		productos = new Every(productos, new Fields("tiempo"), tiempoTotal);
 		//***************************************** END PUNTO 3 ***************************************** //
 		
 		//***************************************** BEGIN PUNTO 4 ***************************************** //
 		//Dentro de este pipe se desarrolla el punto 4: Se rankean los productos del punto 3 de acuerdo a su cantidad de ventas
-		Pipe productosComprados = new Pipe("productosComprados", productos);
+		common = new Fields( "idProducto" );
+		declared = new Fields( "idUsuario", "idProducto", "tiempo", "compro", "idSiguienteProducto", "idProducto2", "total2");
+		Pipe productosComprados = new CoGroup(assemblyBase, common, productos, common, declared, new InnerJoin());
+		//Pipe productosComprados = new Pipe("productosComprados", productos);
 		productosComprados = new Each(productosComprados, new Fields("compro"), filtroCompras);		
 		//Se agrupan las tuplas por producto
 		productosComprados = new GroupBy(productosComprados, new Fields("idProducto"));

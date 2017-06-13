@@ -1,5 +1,5 @@
 
-logVentas = LOAD '/media/sf_bigDataProyectos/input/logVentas.txt' AS (idUsuario:int, idProducto:int, tiempo:int, compro:chararray, idSigProducto:int);
+logVentas = LOAD '/media/sf_Compartida/Big-Data-Project/input/logVentas.txt' AS (idUsuario:int, idProducto:int, tiempo:int, compro:chararray, idSigProducto:int);
 
 ----------------------------------------------------------------------------------------
 /* PUNTO 1 */
@@ -47,7 +47,7 @@ STORE topComprasYTiempoRank INTO 'rankPorComprasYTiempo';
 /* PUNTO 3 */
 ----------------------------------------------------------------------------------------
 
-usuariosTop20TimeRank = LIMIT topSurfingTimeRank 20;
+usuariosTop20TimeRank = LIMIT topComprasYTiempoRank 20;
 usuariosTop20TimeRank = FOREACH usuariosTop20TimeRank GENERATE $0 AS idUsuario;
 
 productosVisitadosPorTop20 = JOIN usuariosTop20TimeRank BY $0, logVentas BY $0;
@@ -69,7 +69,7 @@ topProductosVisitados = FILTER topProductosVisitados BY (compro == 'True');
 topProductosVisitados = FOREACH topProductosVisitados GENERATE idProducto, compro;
 topProductosVisitados = GROUP topProductosVisitados BY $0;
 topProductosVisitados = FOREACH topProductosVisitados GENERATE $0, SIZE(topProductosVisitados.$1);
-topProductosVisitados = ORDER topProductosVisitados BY $1 DESC;
+topProductosVisitados = ORDER topProductosVisitados BY $1 DESC, $0 ASC;
 
 rmf listadoPorCantidadDeVentas;
 STORE topProductosVisitados INTO 'listadoPorCantidadDeVentas';
@@ -88,13 +88,12 @@ STORE top4ProductosVisitados INTO 'top4Productos';
 ----------------------------------------------------------------------------------------
 set default_parallel 1
 
-joinTop4LogVentas = JOIN top4ProductosVisitados BY $0, logVentas BY $1;
+joinTop4LogVentas = LIMIT top4ProductosVisitados 1;
+joinTop4LogVentas = JOIN joinTop4LogVentas BY $0, logVentas BY $1;
+joinTop4LogVentas = GROUP joinTop4LogVentas BY $6;
+joinTop4LogVentas = FOREACH joinTop4LogVentas GENERATE group, SUM(joinTop4LogVentas.tiempo);
+joinTop4LogVentas = ORDER joinTop4LogVentas BY $1 DESC;
 joinTop4LogVentas = LIMIT joinTop4LogVentas 1;
-prodSigMasVisitado = FOREACH joinTop4LogVentas GENERATE idSigProducto, (compro == 'True'? 1 : 0);
-top5RecomendacionesA = UNION top4ProductosVisitados, prodSigMasVisitado;
-top5RecomendacionesB = GROUP top5RecomendacionesA BY 1;
-top5RecomendacionesC = FOREACH top5RecomendacionesB GENERATE FLATTEN(top5RecomendacionesA);
-top5RecomendacionesC = FOREACH top5RecomendacionesC GENERATE $0;
 
 rmf recomendaciones;
-STORE top5RecomendacionesC INTO 'recomendaciones';
+STORE joinTop4LogVentas INTO 'recomendaciones';
