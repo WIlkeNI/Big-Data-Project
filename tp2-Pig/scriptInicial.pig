@@ -37,9 +37,11 @@ topSurfingTimeRank = FOREACH ventasDeUsuariosFiltrados GENERATE group, SUM(venta
 /* Order by time spent diving the web */
 /* $0 -> idUsuario, $1 -> tiempoTotal */
 topSurfingTimeRank = ORDER topSurfingTimeRank BY $1 DESC;
+topComprasYTiempoRank = JOIN topSurfingTimeRank BY $0, topPurchasesRank BY $0;
+topComprasYTiempoRank = ORDER topComprasYTiempoRank BY $3 DESC, $1 DESC;
 
-rmf rankPorTiempo;
-STORE topSurfingTimeRank INTO 'rankPorTiempo';
+rmf rankPorComprasYTiempo;
+STORE topComprasYTiempoRank INTO 'rankPorComprasYTiempo';
 
 ----------------------------------------------------------------------------------------
 /* PUNTO 3 */
