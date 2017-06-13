@@ -16,13 +16,13 @@
   Recibe 9 parámetros:
 	1)Archivo de entrada (logVentas.txt)
 	2)Archivo donde se guarda el punto 1
-	2)Archivo donde se guarda el punto 2
-	2)Archivo donde se guarda el punto 3
-	2)Archivo donde se guarda el punto 4
-	2)Archivo donde se guarda el punto 5
-	2)Archivo donde se guarda el punto 6
-	2)Id del usuario
-	2)Id del producto
+	3)Archivo donde se guarda el punto 2
+	4)Archivo donde se guarda el punto 3
+	5)Archivo donde se guarda el punto 4
+	6)Archivo donde se guarda el punto 5
+	7)Archivo donde se guarda el punto 6
+	8)Id del usuario
+	9)Id del producto
 
   ---------------------------------------------------------
   PASOS PARA EJECUTAR SCRIPT DE PIG
