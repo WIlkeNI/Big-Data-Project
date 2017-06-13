@@ -1,0 +1,2 @@
+idSiguienteProducto	tiempo
+14876	497.0
