@@ -40,33 +40,43 @@ public class StreamingWCConPersistencia {
 		//checkpoint
 		streamContext.checkpoint("tmp");
 		
-		//wordcount
+		//Se eliminan los registros repetidos (mismo idUsuario y idProducto)
+		lines = lines.transform(new Function<JavaRDD<String>, JavaRDD<String>>(){
+			public JavaRDD<String> call(JavaRDD<String> rows) throws Exception {
+				return rows.distinct();
+			}		
+		});
+
+		//Se realiza el split eliminando el idUsuario
 		JavaDStream<String> words = lines.flatMap(
 			new FlatMapFunction<String, String>() {
-				public Iterable<String> call(String x) { 
-					return Arrays.asList(x.split(" ")); 
+				public Iterable<String> call(String x) {
+					String[] split = x.split("\t");
+					return Arrays.asList(result[1]); 
 				}
 			});
-			
-		JavaPairDStream<String, Integer> result = words.mapToPair(
+	
+		//Se crean las tuplas agrupando por idProducto
+		JavaPairDStream<String, Integer> result = lines.mapToPair(
 			new PairFunction<String, String, Integer>() {
-				public Tuple2<String, Integer> call(String x) { 
-					return new Tuple2(x, 1); 
+				public Tuple2<String, Integer> call(String idProducto) { 
+					return new Tuple2(idProducto, 1); 
 				}
-		});
-		
+			});
+
+		//Se contabilizan los productos visitados y se persiste para poder mantener la información en las siguientes ventanas temporales
 		result = result.updateStateByKey(new Function2<List<Integer>, Optional<Integer>, Optional<Integer>>() {
-            public Optional<Integer> call(List<Integer> values, Optional<Integer> current) throws Exception {
-                if (values == null || values.isEmpty()) {
-                    return current;
-                }
-                int sum = current.or(0);
-                for (Integer v : values) {
-                    sum += v;
-                }
-                return Optional.of(sum);
-            }
-        });
+		    public Optional<Integer> call(List<Integer> values, Optional<Integer> current) throws Exception {
+		        if (values == null || values.isEmpty()) {
+		            return current;
+		        }
+		        int sum = current.or(0);
+		        for (Integer v : values) {
+		            sum += v;
+		        }
+		        return Optional.of(sum);
+		    }
+		});
 		
 		result.print();
 		
